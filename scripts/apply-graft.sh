@@ -8,7 +8,9 @@ APP="$ROOT/app"
 GRAFT="$APP/graft"
 JAVA_DIR="$APP/android/app/src/main/java/com/pocketpal"
 GRADLE="$APP/android/app/build.gradle"
-MAINAPP="$JAVA_DIR/MainApplication.kt"
+# MainApplication.kt lives under a com/pocketpalai/ directory but declares package
+# com.pocketpal — locate it rather than assuming the path.
+MAINAPP="$(find "$APP/android/app/src/main/java" -name MainApplication.kt | head -1)"
 
 [ -d "$APP/src" ] || { echo "!! app/ is not a Pocket Pal checkout — run scripts/fork-pocketpal.sh first"; exit 1; }
 
@@ -28,6 +30,11 @@ cp "$GRAFT/src/screens/GameScreen/index.tsx" "$APP/src/screens/GameScreen/index.
 echo "==> 3. Copy story bibles into app assets"
 mkdir -p "$APP/src/game/stories"
 cp "$ROOT/content/stories/"*.json "$APP/src/game/stories/"
+
+echo "==> 3b. Strip explicit .ts/.tsx import extensions (Metro can't resolve them)"
+grep -rEl "from ['\"]\.[^'\"]*\.tsx?['\"]" "$APP/src/core" "$APP/src/game" "$APP/src/diffusion" "$APP/src/billing" "$APP/src/models" "$APP/src/screens/GameScreen" 2>/dev/null | while read -r f; do
+  perl -pi -e "s/(from\s+['\"]\.[^'\"]*?)\.tsx?(['\"])/\$1\$2/g" "$f"
+done
 
 echo "==> 4. Copy native modules (Kotlin + JNI/C++)"
 mkdir -p "$JAVA_DIR/diffusion" "$JAVA_DIR/billing"
@@ -50,10 +57,11 @@ else
   echo "   already patched, skipping."
 fi
 
-echo "==> 6. Register ArcanePackage in MainApplication.kt"
-if [ -f "$MAINAPP" ] && ! grep -q "ArcanePackage" "$MAINAPP"; then
-  perl -0pi -e 's/(val packages = PackageList\(this\).packages)/$1.apply { add(ArcanePackage()) }/' "$MAINAPP" \
-    || echo "   !! could not auto-insert; add 'packages.add(ArcanePackage())' manually"
+echo "==> 6. Register ArcanePackage in MainApplication.kt ($MAINAPP)"
+if [ -n "$MAINAPP" ] && [ -f "$MAINAPP" ] && ! grep -q "ArcanePackage" "$MAINAPP"; then
+  # Insert after the last add(...Package()) call in the getPackages() apply{} block.
+  perl -0pi -e 's/(add\(DownloadPackage\(\)\))/$1\n              add(ArcanePackage())/' "$MAINAPP" \
+    || echo "   !! could not auto-insert; add 'add(ArcanePackage())' manually"
 fi
 
 echo "==> 7. Install added JS dependencies"

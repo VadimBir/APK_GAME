@@ -3,8 +3,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const ADD = {
-  'react-native-iap': '^14.7.20',
-  'react-native-nitro-modules': '^0.36.0',
+  'react-native-iap': '^15.3.2',
+  'react-native-nitro-modules': '^0.35.9',
   '@react-native-async-storage/async-storage': '^2.1.0',
 };
 

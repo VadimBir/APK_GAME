@@ -19,8 +19,9 @@ rm -rf "$tmp/pp/.git"
 
 echo "==> Vendoring into app/ (preserving our app/graft and app/autocheck)"
 mkdir -p "$APP"
-# copy everything except dirs we own
-rsync -a --exclude 'graft/' --exclude 'autocheck/' "$tmp/pp/" "$APP/"
+# copy everything except dirs we own (graft/ and autocheck/ are not in upstream, so a
+# plain copy preserves them). cp used instead of rsync for portability.
+cp -a "$tmp/pp/." "$APP/"
 rm -rf "$tmp"
 
 echo "==> Applying ARCANE TERMINAL graft"

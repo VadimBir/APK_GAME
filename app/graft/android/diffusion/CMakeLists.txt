@@ -15,5 +15,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/stable-diffusion.cpp sd
 
 add_library(sd_bridge SHARED sd_bridge.cpp)
 target_include_directories(sd_bridge PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/stable-diffusion.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/stable-diffusion.cpp/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/stable-diffusion.cpp/thirdparty)
 target_link_libraries(sd_bridge stable-diffusion android log)

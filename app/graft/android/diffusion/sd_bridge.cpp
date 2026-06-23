@@ -7,17 +7,19 @@
 #include <mutex>
 #include <android/log.h>
 #include "stable-diffusion.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"   // from stable-diffusion.cpp/thirdparty (added to include dirs)
 
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "ArcaneSDjni", __VA_ARGS__)
 
 static std::string g_last_error;
 static std::mutex  g_mutex;          // serialize: sd.cpp context is not thread-safe
 
+// Use the library's own name->enum mapper; fall back to euler_a if unrecognized.
 static sample_method_t map_sampler(const std::string& s) {
-    if (s == "euler")    return EULER;
-    if (s == "dpmpp_2m") return DPMPP2M;
-    if (s == "lcm")      return LCM;
-    return EULER_A; // default
+    sample_method_t m = str_to_sample_method(s.c_str());
+    if ((int)m < 0) return EULER_A_SAMPLE_METHOD;
+    return m;
 }
 
 extern "C" {
@@ -65,11 +67,13 @@ Java_com_pocketpal_diffusion_StableDiffusionModule_nativeGenerate(
     g.negative_prompt = neg;
     g.width           = width;
     g.height          = height;
-    g.sample_steps    = steps;
-    g.cfg_scale       = cfg;
-    g.sample_method   = map_sampler(sampler);
     g.seed            = seed;
     g.batch_count     = 1;
+    // sampler/steps/cfg live in the nested sample_params on this API version.
+    sd_sample_params_init(&g.sample_params);
+    g.sample_params.sample_steps      = steps;
+    g.sample_params.guidance.txt_cfg  = cfg;
+    g.sample_params.sample_method     = map_sampler(sampler);
 
     sd_image_t* img = generate_image(ctx, &g);
 
@@ -78,8 +82,7 @@ Java_com_pocketpal_diffusion_StableDiffusionModule_nativeGenerate(
         if (g_last_error.empty()) g_last_error = "generate_image returned null (oom or invalid params)";
         LOGE("%s", g_last_error.c_str());
     } else {
-        // write PNG to outPath (stb_image_write is bundled with stable-diffusion.cpp)
-        extern int stbi_write_png(char const*, int, int, int, const void*, int);
+        // write PNG to outPath (stb_image_write bundled with stable-diffusion.cpp)
         if (stbi_write_png(outPath, img->width, img->height, img->channel, img->data, 0)) {
             result = outPath;
         } else {
