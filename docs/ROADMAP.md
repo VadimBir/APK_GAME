@@ -23,30 +23,34 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` needs on-device v
 - [x] EntitlementService trial gate + backend interface (R9/R10) — `core/src/billing/entitlement.ts`
 - [x] 33 unit tests green (`cd core && npm test`)
 
-## Phase 2 — Fork & boot Pocket Pal
-- [ ] Vendor the Pocket Pal source into `app/`
-- [ ] Rename applicationId / branding → ARCANE TERMINAL
+## Phase 2 — Fork & boot Pocket Pal  `[~]`
+- [x] Android SDK/NDK installed (NDK 27.3.13750724, android-36, build-tools 36)
+- [x] `scripts/fork-pocketpal.sh` + `apply-graft.sh` (reproducible vendoring + graft)
+- [ ] Run the fork + graft + `yarn install` in the env `[!]`
 - [ ] Reproduce a clean debug APK build (baseline) `[!]`
 
-## Phase 3 — ModelGovernor + diffusion native module
-- [ ] `ModelGovernor.ts` (single-resident load/unload/reload)
-- [ ] `DiffusionModule` JNI skeleton + `capabilities()`
-- [ ] `DiffusionParams.validate()` — full limit/error taxonomy (R8)
-- [ ] CPU backend wired to chosen engine
-- [ ] Optional QNN/NPU backend stub + graceful fallback (R7)
-- [ ] Diffusion model catalog + HF downloader (R6)
+## Phase 3 — ModelGovernor + diffusion native module  `[~]`
+- [x] `ModelGovernor` single-resident load/unload/reload (core, tested)
+- [x] `StableDiffusionModule.kt` + `sd_bridge.cpp` JNI + `capabilities()` (graft)
+- [x] Param validation — full limit/error taxonomy (R8) (core, tested)
+- [x] CPU backend wired to stable-diffusion.cpp (`fetch-sdcpp.sh` + CMakeLists)
+- [x] Optional QNN/NPU backend path + graceful CPU fallback (R7) (DiffusionEngine.load)
+- [x] Diffusion model catalog + HF urls (R6) (`diffusionCatalog.ts`)
+- [ ] Native build of sd.cpp verified on device `[!]`
 
-## Phase 4 — Game layer
-- [ ] Story Engine: bible → system prompt → structured turn loop
-- [ ] LLM→game JSON contract parser w/ repair + fallback
-- [ ] Game UI screens (story view, image pane, choices, model status)
-- [ ] Wire text → image_prompt → DiffusionModule per turn
+## Phase 4 — Game layer  `[~]`
+- [x] StoryEngine: bible → system prompt → structured turn loop (graft)
+- [x] LLM→game JSON parser w/ repair + fallback (core, tested)
+- [x] GameScreen (story view, image pane, choices, model status, paywall) (graft)
+- [x] Wire text → image_prompt → DiffusionEngine per turn (StoryEngine)
+- [ ] Live play-test on device `[!]`
 
-## Phase 5 — Monetization
-- [ ] EntitlementService + trial gate (R9)
-- [ ] PlayBillingBackend (release) / DebugGrantBackend (debug) (R10)
-- [ ] Gradle product flavors + buildConfig wiring
-- [ ] $1.99 managed product config notes for Play Console
+## Phase 5 — Monetization  `[~]`
+- [x] EntitlementService + trial gate (R9) (core, tested)
+- [x] PlayBillingBackend (release) / DebugGrantBackend (debug) (R10) (graft)
+- [x] Build-type BILLING_BYPASS wiring + BuildConfig bridge (graft + gradle patch)
+- [x] $1.99 managed product config notes for Play Console (docs/RESEARCH.md §C)
+- [ ] Verify bypass absent from release variant `[!]` (auto-checker grep)
 
 ## Phase 6 — Build & deliver
 - [ ] Produce debug APK (free unlock) `[!]`
