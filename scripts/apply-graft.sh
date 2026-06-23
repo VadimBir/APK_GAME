@@ -25,7 +25,8 @@ cp -r "$GRAFT/src/diffusion" "$APP/src/"
 cp -r "$GRAFT/src/billing"   "$APP/src/"
 cp -r "$GRAFT/src/models"    "$APP/src/" 2>/dev/null || true
 mkdir -p "$APP/src/screens/GameScreen"
-cp "$GRAFT/src/screens/GameScreen/index.tsx" "$APP/src/screens/GameScreen/index.tsx"
+cp "$GRAFT/src/screens/GameScreen/index.tsx"    "$APP/src/screens/GameScreen/index.tsx"
+cp "$GRAFT/src/screens/GameScreen/GameView.tsx" "$APP/src/screens/GameScreen/GameView.tsx"
 
 echo "==> 3. Copy story bibles into app assets"
 mkdir -p "$APP/src/game/stories"
@@ -44,6 +45,12 @@ cp "$GRAFT/android/ArcanePackage.kt"                    "$JAVA_DIR/"
 mkdir -p "$APP/android/app/src/main/jni/diffusion"
 cp "$GRAFT/android/diffusion/CMakeLists.txt" "$APP/android/app/src/main/jni/diffusion/"
 cp "$GRAFT/android/diffusion/sd_bridge.cpp"  "$APP/android/app/src/main/jni/diffusion/"
+
+echo "==> 4b. Install placeholder google-services.json if missing (Firebase plugin needs it)"
+if [ ! -f "$APP/android/app/google-services.json" ]; then
+  cp "$GRAFT/android/placeholders/google-services.json" "$APP/android/app/google-services.json"
+  echo "   installed placeholder (replace with a real one for Firebase features)"
+fi
 
 echo "==> 5. Patch build.gradle: BILLING_BYPASS per build type (R10) + deps"
 if ! grep -q "BILLING_BYPASS" "$GRADLE"; then
