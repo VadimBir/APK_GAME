@@ -1,0 +1,125 @@
+========================================================================
+ARCANE TERMINAL — BUILD SESSION LOG (copy/paste)
+Date: 2026-06-23  |  Branch: claude/local-llm-game-images-ohuhhz
+Repo: VadimBir/APK_GAME
+========================================================================
+
+GOAL (decoded from the brief)
+- A fully OFFLINE, on-device Android text-adventure game where a LOCAL LLM
+  narrates 80s-style interactive fiction and a LOCAL diffusion model paints a
+  matching image for each story beat.
+- Built by FORKING + EXTENDING an existing open-source app (Pocket Pal AI) and
+  grafting on local Stable Diffusion image generation.
+- Catch ALL diffusion errors (cfg/steps/resolution/sampler/OOM/missing/corrupt).
+- 3 original stories inspired by 80s classics (Play-store safe, no owned IP).
+- Sequential single-model loading (only one heavy model in RAM at a time).
+- HuggingFace model download by default + optional edge/NPU (Qualcomm QNN) path.
+- Freemium: free lite/trial, $1.99 unlock. TWO APKs: debug = free unlock for
+  testing; release = real Google Play Billing.
+- Sonnet agents research/"download"; Opus implements; a separate Opus auto-checker
+  sanity-checks; brain model documents and pushes every checkpoint.
+
+KEY DECISIONS (locked with the user)
+- Base architecture: FORK Pocket Pal (React Native) + native Android diffusion
+  module. ("Extend an APK" = fork the open-source source and rebuild.)
+- Stories: 3 ORIGINAL works inspired by 80s classics (zero IP risk).
+- Two-APK split implemented at BUILD-TYPE level: debug -> BILLING_BYPASS=true
+  (free unlock), release -> false (real billing). Compile-time constant, so the
+  bypass literal cannot reach the release bytecode.
+- User mid-session: "ALL JUST DEBUG" -> focus the deliverable on the free debug APK.
+
+RESEARCH (3 background Sonnet agents)
+- Pocket Pal AI: github.com/a-ghorbani/pocketpal-ai, MIT (fork & ship OK), RN 0.82.1
+  bare + New Architecture + Hermes, uses llama.rn (llama.cpp GGUF). Its ModelStore
+  ALREADY does stop-await-release sequential load/unload. Build needs Node >=22.21,
+  Yarn 1.22, JDK 17, NDK 27.3.13750724, compileSdk 36.
+- Diffusion engine: stable-diffusion.cpp (leejet, MIT) — the ggml/GGUF twin of
+  llama.cpp; ~1.5GB RAM for SD-1.5 Q4_0; deterministic new_sd_ctx/free_sd_ctx for
+  load/unload. Default model: second-state/stable-diffusion-v1-5-GGUF (Q4_0).
+  Fallback: MNN. Edge/NPU: Qualcomm QNN (optional, CPU fallback).
+- Billing: react-native-iap v15.3.2 (Play Billing 8, MIT), product full_game_unlock
+  $1.99 non-consumable, entitlement cached for offline, restore = re-query.
+
+WHAT WAS BUILT
+- Tested pure-TS core (runs under `node --test`, 33/33 green):
+  * diffusion error taxonomy + native-error mapper (every failure typed) [R8]
+  * diffusion param validation/clamp (cfg/steps/res/sampler/seed bounds)  [R8]
+  * LLM->game JSON parser w/ repair + never-crash fallback
+  * ModelGovernor single-resident state machine (load/unload/reload)       [R5]
+  * EntitlementService trial gate + compile-time backend                   [R9/R10]
+- Graft kit (extends the Pocket Pal fork):
+  * StoryEngine (per-turn: gate -> LLM narrate -> parse -> swap -> image)
+  * DiffusionEngine JS bridge (pre-flight validate, BUSY guard, QNN->CPU fallback)
+  * StableDiffusionModule.kt + sd_bridge.cpp (JNI over stable-diffusion.cpp,
+    serialized worker thread, native error -> typed code)
+  * BillingConfigModule.kt (exposes compile-time BILLING_BYPASS to JS)
+  * GameLauncher (story picker + 1-tap HuggingFace SD model download) + GameView
+  * 3 story bibles: The Sunless Vault / Derelict: Signal Nine / Blackthorn Manor
+- Reproducible scripts: setup-android-sdk.sh, fork-pocketpal.sh, apply-graft.sh,
+  fetch-sdcpp.sh, build-apks.sh (+ _add-deps.mjs, _wire-nav.mjs).
+
+BUILD ENVIRONMENT FIXES (headless box)
+- Installed Android SDK + NDK 27.3.13750724, android-36, build-tools 36, cmake.
+- Gradle wrapper/AGP needed JDK 17 with the SYSTEM truststore
+  (/etc/ssl/certs/java/cacerts) — bundled Temurin certs failed TLS behind the env CA.
+- rsync absent -> used cp; fixed react-native-iap/nitro versions; stripped explicit
+  .ts import extensions so Metro resolves them.
+
+DELIVERABLE (verified inside the APK)
+- dist/arcane-terminal-debug-freeunlock.apk (~259 MB, standalone, arm64-v8a).
+- Contains: embedded 17MB JS bundle with the game; Kotlin modules ArcanePackage/
+  StableDiffusionModule/BillingConfigModule; libsd_bridge.so (~60MB,
+  stable-diffusion.cpp + ggml) with all 6 JNI exports; in-app SD model download UI.
+- Free unlock (BILLING_BYPASS=true). BUILD SUCCESSFUL.
+
+HOW TO TEST ON A PHONE
+  adb install -r dist/arcane-terminal-debug-freeunlock.apk
+  Open app -> left drawer -> "Arcane Terminal":
+   1) Models tab: download + load a small chat GGUF (the narrator).
+   2) Tap Download for the ~1.6GB Stable Diffusion 1.5 image model.
+   3) Pick a story. LLM narrates each turn; local SD paints the scene.
+  Only one model is in RAM at a time (governor swaps them).
+
+REQUIREMENTS STATUS
+  R1 local LLM narration ......... DONE (llama.rn)
+  R2 local image gen ............. DONE (sd.cpp compiled in + HF download)
+  R3 fork+extend Pocket Pal ...... DONE
+  R4 3 original 80s stories ...... DONE
+  R5 sequential single model ..... DONE (governor)
+  R6 HuggingFace download ........ DONE
+  R7 edge/NPU (QNN) path ......... DONE (optional + CPU fallback)
+  R8 catch ALL diffusion errors .. DONE (taxonomy, 33 tests)
+  R9 free trial + $1.99 .......... DONE (logic + UI)
+  R10a release real billing ...... CODE DONE, release APK NOT built (per "ALL JUST DEBUG")
+  R10b debug free unlock ......... DONE (shipped)
+  R11 installable APK ............ DONE (debug)
+  R12 docs + push checkpoints .... DONE (8 commits)
+  R13 separate auto-checker ...... PARTIAL (agent stalled; verified manually instead)
+  R14 Sonnet research/Opus build . DONE
+
+HONEST GAPS / NEXT STEPS
+  - On-device inference UNVERIFIED (headless build box). Wired + compiles; failures
+    degrade gracefully (caught), never crash. Confirm speed/quality on real hardware.
+  - Real-billing SIGNED RELEASE APK not built yet (deferred).
+  - App label still reads "PocketPal" (cosmetic rebrand pending).
+  - Run a fresh end-to-end Opus auto-check on the final state.
+
+REPRODUCE THE BUILD
+  scripts/fork-pocketpal.sh        # vendor Pocket Pal + apply graft
+  scripts/fetch-sdcpp.sh           # vendor stable-diffusion.cpp
+  scripts/setup-android-sdk.sh     # NDK 27.3.13750724, android-36
+  cd app/android
+  JAVA_HOME=<jdk17> GRADLE_OPTS="-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts" \
+    ./gradlew assembleProdDebug -PreactNativeArchitectures=arm64-v8a
+  # -> app/android/app/build/outputs/apk/prod/debug/app-prod-debug.apk
+
+COMMITS (branch claude/local-llm-game-images-ohuhhz)
+  Phase 0  foundation: docs, requirements, 3 stories, auto-checker contract
+  Phase 1+1.5  research folded into decisions; tested core logic (33 tests)
+  Phase 2-5  full graft kit + reproducible fork/build scripts
+  Phase 2 build prep  fix graft for real toolchain (sd.cpp API, Metro imports)
+  Reproducibility  backport nav wiring + launcher/GameView split + placeholder
+  Phase 6  standalone debug APK built + install/test guide
+  Wire stable-diffusion.cpp native lib into the app build (R2)
+  Image-gen compiled in + in-app SD model download
+========================================================================
