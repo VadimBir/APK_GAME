@@ -45,6 +45,11 @@ cp "$GRAFT/android/ArcanePackage.kt"                    "$JAVA_DIR/"
 mkdir -p "$APP/android/app/src/main/jni/diffusion"
 cp "$GRAFT/android/diffusion/CMakeLists.txt" "$APP/android/app/src/main/jni/diffusion/"
 cp "$GRAFT/android/diffusion/sd_bridge.cpp"  "$APP/android/app/src/main/jni/diffusion/"
+# Wire libsd_bridge.so into the app's JNI CMake so StableDiffusionModule can load it.
+APPCMAKE="$APP/android/app/src/main/jni/CMakeLists.txt"
+if [ -f "$APPCMAKE" ] && ! grep -q "add_subdirectory.*diffusion" "$APPCMAKE"; then
+  printf '\n# ARCANE TERMINAL: build libsd_bridge.so (stable-diffusion.cpp JNI bridge)\nadd_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/diffusion ${CMAKE_BINARY_DIR}/sd_bridge)\n' >> "$APPCMAKE"
+fi
 
 echo "==> 4b. Install placeholder google-services.json if missing (Firebase plugin needs it)"
 if [ ! -f "$APP/android/app/google-services.json" ]; then
