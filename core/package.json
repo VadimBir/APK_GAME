@@ -1,0 +1,10 @@
+{
+  "name": "arcane-terminal-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Engine-agnostic, fully-testable core logic for ARCANE TERMINAL (diffusion validation, LLM turn parsing, model governor, entitlement). Imported by the RN app fork.",
+  "scripts": {
+    "test": "node --test --experimental-strip-types"
+  }
+}

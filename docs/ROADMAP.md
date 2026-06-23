@@ -9,11 +9,19 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` needs on-device v
 - [x] Auto-checker contract → `docs/AUTOCHECK.md`
 - [ ] First checkpoint committed + pushed
 
-## Phase 1 — Research / "download" (Sonnet agents)  `[~]`
-- [~] Pocket Pal source structure & build process
-- [~] On-device diffusion engine selection (+ NPU/edge path)
-- [~] Play Billing two-flavor strategy
-- [ ] Fold findings into DECISIONS.md (ADR-004, 007)
+## Phase 1 — Research / "download" (Sonnet agents)  `[x]`
+- [x] Pocket Pal source structure & build process
+- [x] On-device diffusion engine selection (+ NPU/edge path)
+- [x] Play Billing two-flavor strategy
+- [x] Fold findings into DECISIONS.md (ADR-004, 007) + RESEARCH.md
+
+## Phase 1.5 — Engine-agnostic core logic (pure TS, unit-tested here)  `[x]`
+- [x] Diffusion error taxonomy + native-error mapper (R8) — `core/src/diffusion/errors.ts`
+- [x] Diffusion param validation/clamp (R8) — `core/src/diffusion/params.ts`
+- [x] LLM→game JSON parser + repair + fallback — `core/src/story/contract.ts`
+- [x] ModelGovernor single-resident state machine (R5) — `core/src/engine/governor.ts`
+- [x] EntitlementService trial gate + backend interface (R9/R10) — `core/src/billing/entitlement.ts`
+- [x] 33 unit tests green (`cd core && npm test`)
 
 ## Phase 2 — Fork & boot Pocket Pal
 - [ ] Vendor the Pocket Pal source into `app/`
