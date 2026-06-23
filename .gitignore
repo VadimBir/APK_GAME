@@ -1,0 +1,33 @@
+# Node / RN
+node_modules/
+npm-debug.log
+yarn-error.log
+.expo/
+dist/
+
+# Android
+app/android/.gradle/
+app/android/build/
+app/android/app/build/
+app/android/local.properties
+*.keystore
+!debug.keystore
+*.apk
+*.aab
+.cxx/
+
+# Models (never commit large weights)
+*.gguf
+*.safetensors
+*.onnx
+*.bin
+models_cache/
+
+# IDE / OS
+.idea/
+.DS_Store
+*.iml
+
+# Scratch
+/scratch/
+*.log

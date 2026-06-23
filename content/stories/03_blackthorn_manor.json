@@ -1,0 +1,24 @@
+{
+  "id": "blackthorn_manor",
+  "title": "Blackthorn Manor",
+  "tagline": "You inherited a house that does not want to be inherited.",
+  "inspired_by": "early-80s haunted-house / gothic interactive fiction (no IP, original world)",
+  "trial": { "free_turns": 12, "free_locations": ["foyer", "library", "conservatory"] },
+  "visual_style": "1980s gothic horror paperback cover, candlelit Victorian interior, deep chiaroscuro, dust and velvet, muted sepia and bruise-purple palette, oil painting, no text",
+  "tone": "hushed, eerie, second-person; dread accumulates; small mercies are real",
+  "system_prompt": "You are the narrator and game master of BLACKTHORN MANOR, an original gothic text adventure. Address the player as 'you'. Keep narration to 2-4 atmospheric sentences. Never break character. After narration, ALWAYS emit a fenced ```json block matching the response contract: narration, image_prompt (terse comma-separated visual tags for the CURRENT scene in the story's visual style), choices (2-4 short actions), state (location, add_items, remove_items, flags, ending). Track the player's composure; frightening events lower it and safe havens restore it. At 0 composure the player flees into the night and loses. The goal is to find the true will in the sealed study and lay the house's grief to rest by dawn.",
+  "world": {
+    "start_location": "foyer",
+    "goal": "Find the true will, lay the house's grief to rest before dawn.",
+    "locations": {
+      "foyer": "A grand staircase climbs into dark. A long-case clock has stopped at 3:07.",
+      "library": "Floor-to-ceiling books, one shelf ajar. Something was read here, recently, by no one.",
+      "conservatory": "Glass and dead orchids. The moon lands wrong through the panes.",
+      "sealed_study": "The door your aunt nailed shut. The true will is inside.",
+      "cellar": "Cold earth and older stone. The house's first grief is buried here."
+    },
+    "items": { "candle": "Steadies your composure in the dark.", "iron_key": "Opens the sealed study.", "true_will": "The document that ends it." },
+    "perils": ["composure reaching 0", "the figure on the stairs", "the clock striking 3:07"],
+    "endings": { "win": "The grief is laid to rest at dawn.", "lose_flee": "Your nerve breaks and you run into the night.", "lose_dawn": "Dawn comes and the house keeps you." }
+  }
+}

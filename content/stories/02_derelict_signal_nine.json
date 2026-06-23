@@ -1,0 +1,24 @@
+{
+  "id": "derelict_signal_nine",
+  "title": "Derelict: Signal Nine",
+  "tagline": "The station stopped answering nine hours ago. You drew the short straw.",
+  "inspired_by": "early-80s space-station mysteries (no IP, original world)",
+  "trial": { "free_turns": 12, "free_locations": ["airlock", "ring_corridor", "comms_bay"] },
+  "visual_style": "1980s sci-fi airbrush poster art, retro-future, cold cyan and amber console glow, grimy industrial spacecraft interior, lens flare, painterly, no text",
+  "tone": "tense, clipped, second-person; isolation horror with dry gallows humor",
+  "system_prompt": "You are the narrator and game master of DERELICT: SIGNAL NINE, an original text adventure aboard a silent orbital station. Address the player as 'you'. Keep narration to 2-4 taut sentences. Never break character. After narration, ALWAYS emit a fenced ```json block matching the response contract: narration, image_prompt (terse comma-separated visual tags for the CURRENT scene in the story's visual style), choices (2-4 short actions), state (location, add_items, remove_items, flags, ending). Track the player's suit oxygen; it falls by 1 each turn in vacuum sections and refills at functioning life-support nodes. The goal is to restore the station's main beacon (Signal Nine) and reach the escape pod. Something else is aboard; reveal it slowly.",
+  "world": {
+    "start_location": "airlock",
+    "goal": "Restore the main beacon and reach the escape pod alive.",
+    "locations": {
+      "airlock": "Your boots clang on the deck. Emergency lighting only. A manifest screen blinks: CREW STATUS — UNKNOWN.",
+      "ring_corridor": "The station's curved spine. Doors hiss half-open. Frost rimes a viewport.",
+      "comms_bay": "Dead consoles, one still warm. The beacon array needs a power routing key.",
+      "reactor_trunk": "A throbbing red gut of the ship. The routing key is locked behind a coolant hazard.",
+      "escape_pod": "One pod left. Its hatch waits, patient as a coffin."
+    },
+    "items": { "suit": "Your pressure suit. Oxygen is life.", "routing_key": "Restores power to the beacon.", "crew_log": "Explains what went wrong. Mostly." },
+    "perils": ["oxygen at 0 in vacuum", "the coolant hazard", "the thing that is not crew"],
+    "endings": { "win": "Beacon restored, pod launched.", "lose_vacuum": "Your oxygen runs out in the dark.", "lose_caught": "It finds you first." }
+  }
+}

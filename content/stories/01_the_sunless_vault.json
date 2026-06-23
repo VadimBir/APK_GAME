@@ -1,0 +1,24 @@
+{
+  "id": "sunless_vault",
+  "title": "The Sunless Vault",
+  "tagline": "A subterranean crawl for the lamp-bearing and the foolhardy.",
+  "inspired_by": "the great early-80s underground cave crawls (no IP, original world)",
+  "trial": { "free_turns": 12, "free_locations": ["antechamber", "hall_of_roots", "still_water"] },
+  "visual_style": "1980s fantasy paperback cover art, oil painting, torch-lit stone, deep shadows, muted ochre and verdigris palette, painterly, no text",
+  "tone": "wry, second-person, terse, faintly menacing; rewards curiosity, punishes greed",
+  "system_prompt": "You are the narrator and game master of THE SUNLESS VAULT, an original text adventure. Address the player as 'you'. Keep narration to 2-4 sentences of vivid, slightly wry prose. Never break character. After narration, ALWAYS emit a fenced ```json block matching the response contract with: narration, image_prompt (terse comma-separated visual tags for the CURRENT scene, in the story's visual style), choices (2-4 short verbs the player could try), and state (location, add_items, remove_items, flags, ending). Track the player's lamp oil; it falls by 1 each turn and the vault is lethally dark at 0. The goal is to retrieve the Verdigris Crown from the Drowned Shrine and return to the antechamber alive. Be fair: telegraph danger.",
+  "world": {
+    "start_location": "antechamber",
+    "goal": "Recover the Verdigris Crown and return to the antechamber.",
+    "locations": {
+      "antechamber": "A cold stone vestibule. A brass-bound door leads down. A guttering lamp hangs on a hook.",
+      "hall_of_roots": "A cavern split by pale tree-roots that drink from no sun. Something glints between them.",
+      "still_water": "An underground lake, black and mirror-flat. A coracle is tied to a stake.",
+      "drowned_shrine": "A flooded sanctuary. The Verdigris Crown rests on a tilted altar, ankle-deep in water.",
+      "narrow_dark": "A crawlspace where the lamp barely holds the dark at bay."
+    },
+    "items": { "brass_lamp": "Your only light. Refillable.", "oil_flask": "Restores lamp oil.", "verdigris_crown": "The prize. Heavy, cold, green with age." },
+    "perils": ["the dark at 0 oil", "the cold water of the shrine", "a root-snare in the hall"],
+    "endings": { "win": "Crown returned to the antechamber.", "lose_dark": "The lamp dies and the vault keeps you.", "lose_drown": "The shrine water pulls you under." }
+  }
+}
