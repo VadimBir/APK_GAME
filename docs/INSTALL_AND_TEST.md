@@ -22,26 +22,35 @@ or copy the APK to the phone and tap it (enable "install unknown apps").
 3. Back to **Arcane Terminal**, pick one of the three stories. The on-device LLM narrates;
    tap a choice chip to take a turn.
 
+## Play (with images)
+On the Arcane Terminal launcher screen you'll see three steps:
+1. **Load a chat model** (Models tab) — the narrator.
+2. **Download the image model** — one tap downloads Stable Diffusion 1.5 (~1.6 GB GGUF)
+   from HuggingFace to the device. Optional; the story plays without it.
+3. **Pick a story** and play. Each turn the LLM narrates, then the local SD model paints
+   the scene (the app swaps models in/out — only one is in RAM at a time, R5).
+
 ## What works in THIS build
 - ✅ On-device **LLM narration** via Pocket Pal's `llama.rn` (R1).
-- ✅ The **3 original stories** + branching turn loop, JSON-contract parsing with repair
-  and never-crash fallback (R4, R8 spirit).
-- ✅ **Sequential single-model** governor (R5) — it unloads the LLM before it would load
-  the image model, and vice-versa.
+- ✅ **On-device image generation** — `libsd_bridge.so` (stable-diffusion.cpp + ggml,
+  ~62 MB) is compiled into the APK (`lib/arm64-v8a/`), exposing `nativeLoad/Generate/Free`.
+  One-tap in-app **HuggingFace model download** (R2, R6).
+- ✅ The **3 original stories** + branching turn loop, JSON parsing with repair and
+  never-crash fallback (R4, R8).
+- ✅ **Sequential single-model** governor (R5) — unloads the LLM before loading the image
+  model, and back, so a phone never holds both.
+- ✅ Full **diffusion error taxonomy** caught & surfaced (cfg/steps/res/sampler/OOM/missing
+  /corrupt/cancel) — never a crash (R8).
 - ✅ **Free-unlock billing** path + trial-gate logic (R9/R10b).
-- ✅ Native modules wired (`StableDiffusionModule`, `BillingConfigModule`) and reachable.
 
-## What is NOT in THIS build yet (honest)
-- ⏳ **On-device image generation.** The `sd_bridge`/stable-diffusion.cpp native library is
-  written and CMake-ready (`app/graft/android/diffusion/*`) but **not yet compiled into
-  this APK** (it still needs to be hooked into Pocket Pal's custom `jni/CMakeLists.txt`
-  and the SD model downloaded). Until then, image generation **fails gracefully** — you'll
-  see "Image unavailable: …" under the narration instead of a crash (that's R8 working).
-  The story still plays fully in text.
+## Not in THIS build (honest)
 - ⏳ **Real Google Play billing release APK** (R10a) — the code path exists
-  (`PlayBillingBackend`), gated to the release build type; not built here because you asked
-  for "ALL JUST DEBUG".
+  (`PlayBillingBackend`), gated to the release build type; not built here per "ALL JUST
+  DEBUG".
 - 🅰️ App label still reads **"PocketPal"** (cosmetic; fork base not yet rebranded).
+- ℹ️ Image gen is **untested on real hardware from here** (headless build box). The engine,
+  validation, model swap, and download are all wired; on-device speed/quality is for you
+  to confirm on your phone.
 
 ## Reproduce the build
 ```

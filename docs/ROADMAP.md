@@ -56,7 +56,9 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` needs on-device v
 - [x] Produce **standalone debug APK (free unlock)** — `dist/arcane-terminal-debug-freeunlock.apk`
       (241 MB, BUILD SUCCESSFUL, our Kotlin modules + JS game bundle verified inside)
 - [x] Release notes + install/test guide — `docs/INSTALL_AND_TEST.md`
-- [ ] Wire `sd_bridge` into app `jni/CMakeLists.txt` so real image-gen compiles in `[!]`
+- [x] Wire `sd_bridge` into app `jni/CMakeLists.txt` — `libsd_bridge.so` (62 MB,
+      stable-diffusion.cpp + ggml) verified inside the APK with JNI exports
+- [x] In-app HuggingFace SD model download (R6) in the launcher
 - [ ] Produce signed release APK (real billing) — deferred per "ALL JUST DEBUG"
 
 ## Build environment notes (this headless box)
