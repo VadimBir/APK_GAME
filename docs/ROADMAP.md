@@ -52,10 +52,19 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` needs on-device v
 - [x] $1.99 managed product config notes for Play Console (docs/RESEARCH.md §C)
 - [ ] Verify bypass absent from release variant `[!]` (auto-checker grep)
 
-## Phase 6 — Build & deliver
-- [ ] Produce debug APK (free unlock) `[!]`
-- [ ] Produce signed release APK (real billing) `[!]`
-- [ ] Release notes + install/test guide
+## Phase 6 — Build & deliver  `[~]`
+- [x] Produce **standalone debug APK (free unlock)** — `dist/arcane-terminal-debug-freeunlock.apk`
+      (241 MB, BUILD SUCCESSFUL, our Kotlin modules + JS game bundle verified inside)
+- [x] Release notes + install/test guide — `docs/INSTALL_AND_TEST.md`
+- [ ] Wire `sd_bridge` into app `jni/CMakeLists.txt` so real image-gen compiles in `[!]`
+- [ ] Produce signed release APK (real billing) — deferred per "ALL JUST DEBUG"
+
+## Build environment notes (this headless box)
+- Android SDK/NDK installed via `scripts/setup-android-sdk.sh`.
+- Gradle wrapper (9.0.0) + AGP need **JDK 17** with the **system truststore**
+  (`/etc/ssl/certs/java/cacerts`) — the bundled Temurin truststore failed TLS to
+  services.gradle.org behind this env's CA.
+- `prodDebug` bundles JS (standalone APK). Full build ~22 min (RN New-Arch native compile).
 
 ## Phase 7 — Auto-check & harden
 - [ ] Run Opus auto-checker against REQUIREMENTS.md each milestone
